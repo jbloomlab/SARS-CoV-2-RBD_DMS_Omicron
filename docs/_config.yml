@@ -18,10 +18,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Shifting mutational constraints in the SARS-CoV-2 receptor-binding domain during viral evolution
+title: Omicron RBD DMS
 email: whannon@fredhutch.org 
-description: Interactive visualizations of epistatic shifts between variants of concern. 
-baseurl: "/SARS-CoV-2-RBD_DMS_variants" # the subpath of your site, e.g. /blog
+description: Interactive visualizations of Omicron RBD DMS data. 
+baseurl: "/SARS-CoV-2-RBD_DMS_Omicron" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
