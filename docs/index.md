@@ -7,9 +7,11 @@ layout: default
 
 ## Overview 
 
-SARS-CoV-2 has evolved variants with substitutions in the spike receptor-binding domain (RBD) that impact its affinity for ACE2 receptor and recognition by antibodies. These substitutions could also shape future evolution by modulating the effects of mutations at other sites—a phenomenon called epistasis. To investigate this possibility, we performed deep mutational scans to measure the impact on ACE2 binding of all single amino-acid mutations in the Wuhan-Hu-1, Alpha, Beta, Delta, and Eta variant RBDs.
+We performed deep mutational scans to measure the impact on ACE2 binding of all single amino-acid mutations in the Omicron BA.1 and BA.2 variant RBDs, and compare mutational effects to those in the ancestral Wuhan-Hu-1 RBD background.
 
-Here, we link to two interactive visualizations that enable exploration of the data from these deep mutational scans across SARS_CoV-2 variants. The manuscript detailing the results of these experiments is published [here](https://www.biorxiv.org/content/10.1101/2022.02.24.481899v1). 
+Here, we link to two interactive visualizations that enable exploration of the data from these deep mutational scans across SARS_CoV-2 variants.
+
+*NOTE data are still preliminary*
 
 ### Instructions 
 
@@ -21,4 +23,4 @@ We have made two tools to help visualize the data from our deep mutational scans
 
 ### Data
 
-If you are interested in the raw data from our study, you can find the ACE2-binding affinity (-log10 $$K_D$$) and RBD expression (log10(MFI)) measurements from each experiment [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants/blob/main/results/final_variant_scores/final_variant_scores.csv). You can find the data used to plot the epistatic shifts between variant backgrounds [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants/blob/main/results/epistatic_shifts/JSD_versus_Wuhan1_by_target.csv). 
+If you are interested in the raw data (*NOTE: PRELIMINARY*) from our study, you can find the ACE2-binding affinity (-log10 $$K_D$$) and RBD expression (log10(MFI)) measurements from each experiment [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants/blob/main/results/final_variant_scores/final_variant_scores.csv). You can find the data used to plot the epistatic shifts between variant backgrounds [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants/blob/main/results/epistatic_shifts/JSD_versus_Wuhan1_by_target.csv). 
