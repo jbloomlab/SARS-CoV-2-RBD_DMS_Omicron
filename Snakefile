@@ -62,7 +62,6 @@ rule make_summary:
         collapse_scores='results/summary/collapse_scores.md',
         mut_phenos_file=config['final_variant_scores_mut_file'],
         epistatic_shifts='results/summary/epistatic_shifts.md',
-        structural_shifts='results/summary/structural_shifts.md',
         epistasis_viz=os.path.join(config['visualization_dir'], "epistasis.html"),
         heatmap_viz=os.path.join(config['visualization_dir'], "heatmap.html")
     output:
@@ -103,9 +102,7 @@ rule make_summary:
             
             7. [Analyze patterns of epistasis in the DMS data and in SARS-CoV-2 genomic data]({path(input.epistatic_shifts)}).
             
-            8. [Analyze structural perturbations in variant RBD structures and compare to DMS data]({path(input.structural_shifts)}).
-
-            9. Make interactive data visualizations, available [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_Omicron/)
+            8. Make interactive data visualizations, available [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_Omicron/)
 
             """
             ).strip())
@@ -142,26 +139,6 @@ rule interactive_heatmap_plot:
         html=os.path.join(config['visualization_dir'], "heatmap.html")
     notebook: "RBD-Heatmaps-Interactive-Visualization.ipynb"
 
-
-rule structural_shifts:
-    input:
-        config['final_variant_scores_mut_file'],
-        config['JSD_v_WH1_file']
-    output:
-        md='results/summary/structural_shifts.md',
-        md_files=directory('results/summary/structural_shifts_files')
-    envmodules:
-        'R/3.6.2-foss-2019b'
-    params:
-        nb='structural_shifts.Rmd',
-        md='structural_shifts.md',
-        md_files='structural_shifts_files'
-    shell:
-        """
-        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
-        mv {params.md} {output.md};
-        mv {params.md_files} {output.md_files}
-        """
 
 rule epistatic_shifts:
     input:
