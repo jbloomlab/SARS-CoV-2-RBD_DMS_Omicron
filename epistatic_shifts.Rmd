@@ -297,7 +297,7 @@ invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc.pd
 
 Include just Beta from the prior VOC dataset, and Beta-associated WH1 for "control"
 
-```{r line_plots_JSD_v_WH1_min3bc, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+```{r line_plots_JSD_v_WH1_min3bc_Beta-only, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
 ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")], aes(x=site, y=JSD_min3bc, color=target))+
   geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
   geom_line(size=1)+
@@ -383,7 +383,7 @@ invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_ex
 
 Include just Beta from the prior VOC dataset, and Beta-associated Wuhan-Hu-1 measurements for "control"
 
-```{r line_plots_JSD_v_WH1_min3bc, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+```{r line_plots_JSD_v_WH1_expr_min3bc_Beta-only, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
 ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")], aes(x=site, y=JSD_min3bc, color=target))+
   geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
   geom_line(size=1)+
@@ -397,7 +397,7 @@ ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_expr_Omi-and-Beta-only.pdf",sep=""),useDingbats=F))
 ```
 
-```{r scatterplots_epistatic-shift_Beta-BA1-BA2, echo=T, fig.width=16, fig.height=4, fig.align="center", dpi=300,dev="png"}
+```{r scatterplots_epistatic-shift_Beta-BA1-BA2_expr, echo=T, fig.width=16, fig.height=4, fig.align="center", dpi=300,dev="png"}
 temp[bg_2=="Wuhan-Hu-1_v1",bg_2:="Wuhan.Hu.1_v1"]
 temp2 <- dcast(temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan.Hu.1_v1")], site ~ bg_2, value.var="JSD_min3bc")
 
