@@ -482,6 +482,21 @@ p1
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/heatmap_SSM_delta-expression-by-target.pdf",sep="")))
 ```
 
+Merge with the prior VOC DMS experiments on the WH1, Alpha, Beta, Delta, and Eta backgrounds so the file for subsequent analyses and interactive visualizaitons incorporates this additional data.
+
+```{r merge_inputs}
+dt_voc <- data.table(read.csv(file=config$VOC_mut_bind_expr,stringsAsFactors=F))
+dt_voc[target=="Wuhan-Hu-1",target:="Wuhan-Hu-1_v1"]
+dt_voc[target=="N501Y",target:="Alpha"]
+dt_voc[target=="E484K",target:="Eta"]
+
+dt_final[target=="Wuhan-Hu-1",target:="Wuhan-Hu-1_v2"]
+
+dt_final <- rbind(dt_final[,.(target,wildtype,position,mutant,mutation,bind,delta_bind,n_bc_bind,n_libs_bind,bind_rep1,bind_rep2,bind_rep3,expr,delta_expr,n_bc_expr,n_libs_expr,expr_rep1,expr_rep2)],dt_voc[,.(target,wildtype,position,mutant,mutation,bind,delta_bind,n_bc_bind,n_libs_bind,bind_rep1,bind_rep2,bind_rep3,expr,delta_expr,n_bc_expr,n_libs_expr,expr_rep1,expr_rep2)])
+
+rm(dt_voc)
+
+```
 
 Save output files.
 

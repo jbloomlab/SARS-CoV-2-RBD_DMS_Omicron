@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse","gridExtra","bio3d","ggridges","ggrepel")
+packages = c("yaml","data.table","tidyverse","gridExtra","bio3d","ggridges","ggrepel","GGally")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -56,11 +56,12 @@ cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
 
 ## Setup
 
-Read in tables of mutant measurements.
+Read in tables of mutant measurements from current study and prior VOCs DMS datasets.
 
 ```{r input_data}
 dt <- data.table(read.csv(file=config$final_variant_scores_mut_file,stringsAsFactors=F))
 ```
+
 
 ## Calculate site-wise Jensen-Shannon divergence, a metric of divergence in site-specific mutational profiles
 
@@ -97,7 +98,7 @@ JS <- function(vec1,vec2){
 #first, for bind measurements
 #data table for storing difference in correlation in profiles between bg pairs at each site
 #generate table with all combinations of bg_1 and bg_2 for each site
-diffs_bind <- data.table(expand.grid(site=unique(dt$position),bg_2=c("Wuhan-Hu-1","Omicron_BA1","Omicron_BA2"),bg_1=c("Wuhan-Hu-1","Omicron_BA1","Omicron_BA2")))
+diffs_bind <- data.table(expand.grid(site=unique(dt$position),bg_2=c("Wuhan-Hu-1_v2","Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v1","Alpha","Beta","Delta","Eta"),bg_1=c("Wuhan-Hu-1_v2","Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v1","Alpha","Beta","Delta","Eta")))
 
 #remove duplicates where bg_1 and _2 the same
 diffs_bind <- diffs_bind[bg_1 != bg_2,]
@@ -121,7 +122,7 @@ for(i in 1:nrow(diffs_bind)){
 #repeat for expr measurements
 #data table for storign difference in correlation in profiles between bg pairs at each site
 #generate table with all combinations of bg_1 and bg_2 for each site
-diffs_expr <- data.table(expand.grid(site=unique(dt$position),bg_2=c("Wuhan-Hu-1","Omicron_BA1","Omicron_BA2"),bg_1=c("Wuhan-Hu-1","Omicron_BA1","Omicron_BA2")))
+diffs_expr <- data.table(expand.grid(site=unique(dt$position),bg_2=c("Wuhan-Hu-1_v2","Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v1","Alpha","Beta","Delta","Eta"),bg_1=c("Wuhan-Hu-1_v2","Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v1","Alpha","Beta","Delta","Eta")))
 
 #remove duplicates where either bg_1 and _2 the same
 diffs_expr <- diffs_expr[bg_1 != bg_2,]
@@ -195,34 +196,36 @@ plot_scatter <- function(site, bg1, bg2, JSD=F, JSD_min3bc=T, JSD_min5bc=F,n_bc_
 
 ```{r scatters_BA1_diffs, echo=T, fig.width=9, fig.height=12, fig.align="center", dpi=300,dev="png"}
 par(mfrow=c(4,3))
-plot_scatter(site=401,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=403,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=405,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=419,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=449,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=455,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=494,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=496,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=498,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=501,"Wuhan-Hu-1","Omicron_BA1")
-plot_scatter(site=505,"Wuhan-Hu-1","Omicron_BA1")
+plot_scatter(site=401,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=405,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=494,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=496,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=498,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=501,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=505,"Wuhan-Hu-1_v2","Omicron_BA1")
 
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/bg-scatters_Omicron_BA1_shifts.pdf",sep=""),useDingbats=F))
 ```
 
 ```{r scatters_BA2_diffs, echo=T, fig.width=9, fig.height=12, fig.align="center", dpi=300,dev="png"}
 par(mfrow=c(4,3))
-plot_scatter(site=401,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=403,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=405,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=419,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=449,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=455,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=494,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=496,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=498,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=501,"Wuhan-Hu-1","Omicron_BA2")
-plot_scatter(site=505,"Wuhan-Hu-1","Omicron_BA2")
+plot_scatter(site=401,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=405,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=494,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=496,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=498,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=501,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=505,"Wuhan-Hu-1_v2","Omicron_BA2")
 
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/bg-scatters_Omicron_BA2_shifts.pdf",sep=""),useDingbats=F))
 ```
@@ -254,15 +257,15 @@ label_df <- data.frame(xmin=sig_mAb_sites-0.5,
 
 ```{r line_plots_JSD_v_WH1, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
 #define focal bg for others to compare to
-bg <- "Wuhan-Hu-1"
+bg <- "Wuhan-Hu-1_v2"
 temp <- diffs_bind[bg_1==bg,]
 temp$target <- as.character(temp$bg_2)
 
 #define colors for each bg
-group.colors <- c("Wuhan-Hu-1" = cbPalette[1], "Omicron_BA1" = cbPalette[2], "Omicron_BA2" = cbPalette[8])
+group.colors <- c("Wuhan-Hu-1_v2" = cbPalette[1], "Omicron_BA1" = cbPalette[2], "Omicron_BA2" = cbPalette[8],"Wuhan-Hu-1_v1" = "black", "Alpha" = cbPalette[3], "Beta" = cbPalette[6], "Delta" = cbPalette[7], "Eta" = cbPalette[5])
 
 #define order for plotting of bgs
-temp$target <- factor(temp$target,levels=c("Omicron_BA1","Omicron_BA2"))
+temp$target <- factor(temp$target,levels=c("Alpha","Beta","Delta","Eta","Wuhan-Hu-1_v1","Omicron_BA1","Omicron_BA2"))
 
 
 ggplot(data=temp, aes(x=site, y=JSD, color=target))+
@@ -292,17 +295,63 @@ ggplot(data=temp, aes(x=site, y=JSD_min3bc, color=target))+
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc.pdf",sep=""),useDingbats=F))
 ```
 
+Include just Beta from the prior VOC dataset, and Beta-associated WH1 for "control"
+
+```{r line_plots_JSD_v_WH1_min3bc, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")], aes(x=site, y=JSD_min3bc, color=target))+
+  geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
+  geom_line(size=1)+
+  scale_color_manual(values=group.colors)+
+  theme_classic()+
+  scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
+  ylab("JS divergence versus Wuhan-Hu-1")+
+  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.15)),as.character(site),'')),size=3,color="gray40")
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_Omi-and-Beta-only.pdf",sep=""),useDingbats=F))
+```
+
+Scatterplots to more clearly show the additional shifts in each Omicron variant versus Beta?
+
+```{r scatterplots_epistatic-shift_Beta-BA1-BA2, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+temp2 <- dcast(temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta")], site ~ bg_2, value.var="JSD_min3bc")
+
+p1 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Omicron_BA2))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Omicron_BA1 > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.1")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Omicron BA.2")
+
+p2 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Beta))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA1 > 0.1 | Beta > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.1")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Beta")
+
+p3 <- ggplot(data=temp2, aes(x=Omicron_BA2, y=Beta))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Beta > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.2")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Beta")
+
+grid.arrange(p1,p2,p3,nrow=1)
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_Omi-versus-Beta-scatters.pdf",sep=""),useDingbats=F))
+```
 
 Repeat for expression measurements
 
 ```{r line_plots_JSD_v_WH1_expr, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
 #define focal bg for others to compare to
-bg <- "Wuhan-Hu-1"
+bg <- "Wuhan-Hu-1_v2"
 temp <- diffs_expr[bg_1==bg,]
 temp$target <- as.character(temp$bg_2)
 
 #define order for plotting of bgs
-temp$target <- factor(temp$target,levels=c("Omicron_BA1","Omicron_BA2"))
+temp$target <- factor(temp$target,levels=c("Alpha","Beta","Delta","Eta","Wuhan-Hu-1_v1","Omicron_BA1","Omicron_BA2"))
 
 
 ggplot(data=temp, aes(x=site, y=JSD, color=target))+
@@ -327,12 +376,63 @@ ggplot(data=temp, aes(x=site, y=JSD_min3bc, color=target))+
   scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
   ylab("JS divergence versus Wuhan-Hu-1, expression DMS")+
-  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.1)),as.character(site),'')),size=3,color="gray40")
+  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.15)),as.character(site),'')),size=3,color="gray40")
 
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_expr.pdf",sep=""),useDingbats=F))
 ```
 
+Include just Beta from the prior VOC dataset, and Beta-associated Wuhan-Hu-1 measurements for "control"
 
+```{r line_plots_JSD_v_WH1_min3bc, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")], aes(x=site, y=JSD_min3bc, color=target))+
+  geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
+  geom_line(size=1)+
+  scale_color_manual(values=group.colors)+
+  theme_classic()+
+  scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
+  ylab("JS divergence versus Wuhan-Hu-1")+
+  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.1)),as.character(site),'')),size=3,color="gray40")
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_expr_Omi-and-Beta-only.pdf",sep=""),useDingbats=F))
+```
+
+```{r scatterplots_epistatic-shift_Beta-BA1-BA2, echo=T, fig.width=16, fig.height=4, fig.align="center", dpi=300,dev="png"}
+temp[bg_2=="Wuhan-Hu-1_v1",bg_2:="Wuhan.Hu.1_v1"]
+temp2 <- dcast(temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan.Hu.1_v1")], site ~ bg_2, value.var="JSD_min3bc")
+
+p1 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Omicron_BA2))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Omicron_BA1 > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  scale_x_continuous(limits = c(0, 0.31))+
+  scale_y_continuous(limits = c(0, 0.31))
+
+p2 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Beta))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA1 > 0.1 | Beta > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  scale_x_continuous(limits = c(0, 0.31))+
+  scale_y_continuous(limits = c(0, 0.31))
+
+p3 <- ggplot(data=temp2, aes(x=Omicron_BA2, y=Beta))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Beta > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  scale_x_continuous(limits = c(0, 0.31))+
+  scale_y_continuous(limits = c(0, 0.31))
+
+p4 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Wuhan.Hu.1_v1))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Wuhan.Hu.1_v1 > 0.1 | Beta > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  scale_x_continuous(limits = c(0, 0.31))+
+  scale_y_continuous(limits = c(0, 0.31))
+
+grid.arrange(p1,p2,p3,p4,nrow=1)
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_expr_Omi-versus-Beta-scatters.pdf",sep=""),useDingbats=F))
+```
 
 ## Map divergence to pdb structure
 
@@ -346,7 +446,7 @@ for(s in c("Omicron_BA1","Omicron_BA2")){
   for(i in 1:nrow(pdb_wh1$atom)){
     if(pdb_wh1$atom$chain[i]=="E"){
       res <- pdb_wh1$atom$resno[i]
-      JSD <- diffs_bind[bg_1=="Wuhan-Hu-1" & bg_2==s & site==res, JSD_min3bc]
+      JSD <- diffs_bind[bg_1=="Wuhan-Hu-1_v2" & bg_2==s & site==res, JSD_min3bc]
       if(length(JSD)>0){
         b[i] <- JSD
       }
@@ -366,7 +466,7 @@ for(s in c("Omicron_BA1","Omicron_BA2")){
   for(i in 1:nrow(pdb_wh1$atom)){
     if(pdb_wh1$atom$chain[i]=="E"){
       res <- pdb_wh1$atom$resno[i]
-      JSD <- diffs_expr[bg_1=="Wuhan-Hu-1" & bg_2==s & site==res, JSD_min3bc]
+      JSD <- diffs_expr[bg_1=="Wuhan-Hu-1_v2" & bg_2==s & site==res, JSD_min3bc]
       if(length(JSD)>0){
         b[i] <- JSD
       }
@@ -374,5 +474,21 @@ for(s in c("Omicron_BA1","Omicron_BA2")){
   }
   write.pdb(pdb=pdb_wh1, file=paste(config$epistatic_shifts_dir,"/pdbs/",s,"_v_WH1_JSD-min3bc_expr.pdb",sep=""), b=b)
 }
+```
+
+```{r look more at 493, fig.width=4, fig.height=4, fig.align="center", dpi=300,dev="png"}
+temp <- dt[position==493 & target != "Omicron_BA2",]
+
+temp[,delta_bind_Q493ref := as.numeric(NA)]
+for(i in 1:nrow(temp)){
+  temp$delta_bind_Q493ref[i] <- temp$bind[i] - temp[target==temp$target[i] & mutant=="Q",bind] 
+}
+
+plot(temp[target=="Wuhan-Hu-1_v2",delta_bind_Q493ref],temp[target=="Omicron_BA1",delta_bind_Q493ref],pch=temp[target=="Wuhan-Hu-1_v2",mutant],xlab="Q493x mutation, WH1",ylab="Q493x mutation, BA1",xlim=c(-2.5,1.7),ylim=c(-2.5,1.7))
+abline(a=0,b=1)
+abline(v=0,lty=2)
+abline(h=0,lty=2)
 
 ```
+
+
