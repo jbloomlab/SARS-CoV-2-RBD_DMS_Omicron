@@ -9,6 +9,8 @@ The 3 backgrounds examined here are:
 
 Study and analysis by Tyler Starr, Allie Greaney, [Jesse Bloom](https://research.fhcrc.org/bloom/en.html), and co-authors.
 
+Interactive visualizations of the key deep mutational scanning data are available [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_Omicron/).
+
 ## Summary of workflow and results
 For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
 Reading this summary is the best way to understand the analysis.

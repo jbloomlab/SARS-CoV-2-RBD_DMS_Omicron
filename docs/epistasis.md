@@ -24,6 +24,4 @@ The epistatic shift is calculated as the Jensen-Shannon divergence in the set of
 Data labeled "v1" (Alpha, Beta, Delta, Eta, and associated Wuhan-Hu-1 v1 measurements) are from a previously published study described [here](https://www.science.org/doi/10.1126/science.abo7896). The Wuhan-Hu-1 library was also spiked into the Omicron BA.1 and BA.2 libraries in a separate experiment. Although each Wuhan-Hu-1 dataset is closely correlated, it is most appropriate to compare each variant dataset to its matched Wuhan-Hu-1 dataset due to internal control.
 
 
-Raw data can be found [here](). The code used to make these plots can be found [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/blob/main/RBD-Heatmaps-Interactive-Visualization.ipynb).
-
 Raw data (*NOTE: PRELIMINARY*) can be found [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/blob/main/results/epistatic_shifts/JSD_versus_Wuhan1_by_target.csv) for a table of all pairwise RBD epistatic shifts, and [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/blob/main/results/final_variant_scores/final_variant_scores.csv) for individual measurements of RBD mutant affinities. The code used to make these plots can be found [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_Omicron/blob/main/Epistatic-Shifts-Interactive-Visualization.ipynb). 
