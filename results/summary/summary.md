@@ -11,7 +11,7 @@ Here is the DAG of the computational workflow:
 Here is the Markdown output of each Jupyter notebook in the
 workflow:
 
-1. Get prior RBD DMS mutation-level binding and expression data from [original Wuhan-Hu-1 dimeric ACE2 DMS](../prior_DMS_data/mutant_ACE2binding_expression.csv) and [prior VOCs (WH1, Alpha, Beta, Delta, Eta) monomeric ACE2 DMS](../prior_DMS_data/VOC_mutant_ACE2binding_expression.csv).
+1. Get prior RBD DMS mutation-level binding and expression data from [original Wuhan-Hu-1 dimeric ACE2 DMS](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS),  [prior VOCs (WH1, Alpha, Beta, Delta, Eta) monomeric ACE2 DMS](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants), and [Jesse's script to get counts of substitutions from UShER MAT broken by clade](https://github.com/jbloomlab/SARS2-RBD-DMS-evolution).
 
 2. Process PacBio CCSs for each background: [Wuhan_Hu_1](process_ccs_Wuhan_Hu_1.md), [Omicron BA.1](process_ccs_BA1.md), [Omicron BA.2](process_ccs_BA2.md). Creates barcode-variant lookup tables for each background: [Wuhan_Hu_1](../variants/codon_variant_table_Wuhan_Hu_1.csv), [Omicron BA.1](../variants/codon_variant_table_BA1.csv), [Omicron BA.2](../variants/codon_variant_table_BA2.csv).
 

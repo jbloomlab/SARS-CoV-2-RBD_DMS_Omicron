@@ -1,0 +1,3 @@
+library,bg,run,ccs,ccs_file
+pool1,Omicron_BA2,220524_B,demultiplex.bc1001_BAK8A_OA--bc1001_BAK8A_OA.hifi_reads.fastq.gz,/fh/fast/bloom_j/SR/ngs/pacbio/220524_Bloom/Allie_Pool2-Cell3/demultiplex.bc1001_BAK8A_OA--bc1001_BAK8A_OA.hifi_reads.fastq.gz
+pool2,Omicron_BA2,220524_B,demultiplex.bc1021_BAK8B_OA--bc1021_BAK8B_OA.hifi_reads.fastq.gz,/fh/fast/bloom_j/SR/ngs/pacbio/220524_Bloom/Allie_Pool2-Cell3/demultiplex.bc1021_BAK8B_OA--bc1021_BAK8B_OA.hifi_reads.fastq.gz

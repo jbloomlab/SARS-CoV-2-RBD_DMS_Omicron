@@ -48,6 +48,7 @@ rule make_summary:
         get_mut_bind_expr=config['mut_bind_expr'],
         get_VOC_mut_bind_expr=config['VOC_mut_bind_expr'],
         get_mut_antibody_escape=config['mut_antibody_escape'],
+        get_mut_clade_occurrence=config['mut_clade_occurrence'],
         process_ccs_Wuhan_Hu_1=nb_markdown('process_ccs_Wuhan_Hu_1.ipynb'),
         process_ccs_BA1=nb_markdown('process_ccs_BA1.ipynb'),
         process_ccs_BA2=nb_markdown('process_ccs_BA2.ipynb'),
@@ -86,7 +87,7 @@ rule make_summary:
             Here is the Markdown output of each Jupyter notebook in the
             workflow:
 
-            1. Get prior RBD DMS mutation-level binding and expression data from [original Wuhan-Hu-1 dimeric ACE2 DMS]({path(input.get_mut_bind_expr)}) and [prior VOCs (WH1, Alpha, Beta, Delta, Eta) monomeric ACE2 DMS]({path(input.get_VOC_mut_bind_expr)}).
+            1. Get prior RBD DMS mutation-level binding and expression data from [original Wuhan-Hu-1 dimeric ACE2 DMS](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS),  [prior VOCs (WH1, Alpha, Beta, Delta, Eta) monomeric ACE2 DMS](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants), and [Jesse's script to get counts of substitutions from UShER MAT broken by clade](https://github.com/jbloomlab/SARS2-RBD-DMS-evolution).
             
             2. Process PacBio CCSs for each background: [Wuhan_Hu_1]({path(input.process_ccs_Wuhan_Hu_1)}), [Omicron BA.1]({path(input.process_ccs_BA1)}), [Omicron BA.2]({path(input.process_ccs_BA2)}). Creates barcode-variant lookup tables for each background: [Wuhan_Hu_1]({path(input.barcode_variant_table_Wuhan_Hu_1)}), [Omicron BA.1]({path(input.barcode_variant_table_BA1)}), [Omicron BA.2]({path(input.barcode_variant_table_BA2)}).
             
@@ -145,6 +146,7 @@ rule epistatic_shifts:
     input:
         config['final_variant_scores_mut_file'],
         config['mut_antibody_escape'],
+        config['mut_clade_occurrence'],
     output:
         config['JSD_v_WH1_file'],
         config['JSD_v_WH1_expr_file'],
@@ -245,6 +247,13 @@ rule count_variants:
         nb='count_variants.ipynb'
     shell:
         "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
+
+rule get_mut_clade_occurrence:
+    """Download SARS-CoV-2 mutation ACE2-binding and expression from URL."""
+    output:
+        file=config['mut_clade_occurrence']
+    run:
+        urllib.request.urlretrieve(config['mut_clade_occurrence_url'], output.file)
 
 rule get_mut_bind_expr:
     """Download SARS-CoV-2 mutation ACE2-binding and expression from URL."""

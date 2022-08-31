@@ -278,11 +278,15 @@ Censor any measurements that are from <3 bc or only sampled in a single replicat
 
 Coverage stats on n_barcodes for different measurements in the final pooled measurements, just for new BA1 and BA2 libs.
 
-```{r n_barcode_plots, echo=T, fig.width=7, fig.height=3.5, fig.align="center", dpi=300,dev="png"}
-par(mfrow=c(1,2))
-hist(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_bind],col="gray50",main=paste("mutant bind score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_bind],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_bind])/2,xlab="number barcodes")
-hist(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_expr],col="gray50",main=paste("mutant expr score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_expr],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_expr])/2,xlab="")
+```{r n_barcode_plots, echo=T, fig.width=7, fig.height=5, fig.align="center", dpi=300,dev="png"}
+par(mfrow=c(2,2))
+#BA.1
+hist(dt_final[wildtype!=mutant & target %in% c("BA1"), n_bc_bind],col="gray50",main=paste("mutant bind score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA1"), n_bc_bind],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_bind])/2,xlab="number barcodes", xlim=c(0,100))
+hist(dt_final[wildtype!=mutant & target %in% c("BA1"), n_bc_expr],col="gray50",main=paste("mutant expr score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA1"), n_bc_expr],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_expr])/2,xlab="", xlim=c(0,100))
 
+#BA.2
+hist(dt_final[wildtype!=mutant & target %in% c("BA2"), n_bc_bind],col="gray50",main=paste("mutant bind score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA2"), n_bc_bind],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_bind])/2,xlab="number barcodes", xlim=c(0,100))
+hist(dt_final[wildtype!=mutant & target %in% c("BA2"), n_bc_expr],col="gray50",main=paste("mutant expr score,\nmedian ",median(dt_final[wildtype!=mutant & target %in% c("BA2"), n_bc_expr],na.rm=T),sep=""),right=F,breaks=max(dt_final[wildtype!=mutant & target %in% c("BA1","BA2"), n_bc_expr])/2,xlab="", xlim=c(0,100))
 invisible(dev.print(pdf, paste(config$final_variant_scores_dir,"/histogram_n_bc_per_geno_pooled-libs.pdf",sep="")))
 ```
 
@@ -497,6 +501,87 @@ dt_final <- rbind(dt_final[,.(target,wildtype,position,mutant,mutation,bind,delt
 rm(dt_voc)
 
 ```
+
+Are there more affinity-enhancing mutations (and sites with mutations) in WH1 compared to BA1 or BA2? First, distributions of all mutations, and number of mutaitons in each bg with >0 or >0.5 effects
+
+```{r affinity_dist_by_background_mutations, fig.width=6,fig.height=3,fig.align="center", dpi=500,dev="png",echo=T}
+#define colors for each bg
+cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7")
+
+group.colors <- c("Wuhan-Hu-1_v2" = cbPalette[1], "Omicron_BA1" = cbPalette[2], "Omicron_BA2" = cbPalette[8],"Wuhan-Hu-1_v1" = "black", "Alpha" = cbPalette[3], "Beta" = cbPalette[6], "Delta" = cbPalette[7], "Eta" = cbPalette[5])
+
+ggplot(dt_final[target %in% c("Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v2")], aes(x=delta_bind, color=target))+
+  geom_density(lwd=1)+
+  theme_classic()+
+  geom_vline(xintercept=0.5,linetype="dashed",size=.5)+
+  scale_color_manual(values=group.colors)
+
+```
+
+```{r tabulte_affinity_enhance_per_background_mutations}
+bgs <- c("Wuhan-Hu-1","Omicron BA.1", "Omicron BA.2")
+
+number_greater_0 <- c(nrow(dt_final[target=="Wuhan-Hu-1_v2" & delta_bind>0,]),
+                      nrow(dt_final[target=="Omicron_BA1" & delta_bind>0,]),
+                      nrow(dt_final[target=="Omicron_BA2" & delta_bind>0,]))
+
+number_greater_0.01 <- c(nrow(dt_final[target=="Wuhan-Hu-1_v2" & delta_bind>0.01,]),
+                      nrow(dt_final[target=="Omicron_BA1" & delta_bind>0.01,]),
+                      nrow(dt_final[target=="Omicron_BA2" & delta_bind>0.01,]))
+
+number_greater_0.5 <- c(nrow(dt_final[target=="Wuhan-Hu-1_v2" & delta_bind>0.5,]),
+                      nrow(dt_final[target=="Omicron_BA1" & delta_bind>0.5,]),
+                      nrow(dt_final[target=="Omicron_BA2" & delta_bind>0.5,]))
+
+cbind("background"=bgs, "number > 0"=number_greater_0, "number > 0.01"=number_greater_0.01, "number_greater_0.5" = number_greater_0.5)
+
+```
+
+And, max effect per site
+
+```{r affinity_dist_by_background_sites, fig.width=6,fig.height=3,fig.align="center", dpi=500,dev="png",echo=T}
+dt_sites <- copy(dt_final[mutant!=wildtype,])
+
+dt_sites[,max_bind_per_site:=max(delta_bind,na.rm=T),by=c("target","position")]
+
+dt_sites <- unique(dt_sites[,.(target,wildtype,position,max_bind_per_site)])
+
+#define colors for each bg
+cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7")
+
+group.colors <- c("Wuhan-Hu-1_v2" = cbPalette[1], "Omicron_BA1" = cbPalette[2], "Omicron_BA2" = cbPalette[8],"Wuhan-Hu-1_v1" = "black", "Alpha" = cbPalette[3], "Beta" = cbPalette[6], "Delta" = cbPalette[7], "Eta" = cbPalette[5])
+
+ggplot(dt_sites[target %in% c("Omicron_BA1","Omicron_BA2","Wuhan-Hu-1_v2")], aes(x=max_bind_per_site, color=target))+
+  geom_density(lwd=1)+
+  theme_classic()+
+  geom_vline(xintercept=0.5,linetype="dashed",size=.5)+
+  geom_vline(xintercept=0,linetype="dashed",size=.5)+
+  scale_color_manual(values=group.colors)
+
+```
+
+```{r tabulte_affinity_enhance_per_background_sites}
+bgs <- c("Wuhan-Hu-1","Omicron BA.1", "Omicron BA.2")
+
+number_greater_0 <- c(nrow(dt_sites[target=="Wuhan-Hu-1_v2" & max_bind_per_site>0,]),
+                      nrow(dt_sites[target=="Omicron_BA1" & max_bind_per_site>0,]),
+                      nrow(dt_sites[target=="Omicron_BA2" & max_bind_per_site>0,]))
+
+number_greater_0.01 <- c(nrow(dt_sites[target=="Wuhan-Hu-1_v2" & max_bind_per_site>0.01,]),
+                      nrow(dt_sites[target=="Omicron_BA1" & max_bind_per_site>0.01,]),
+                      nrow(dt_sites[target=="Omicron_BA2" & max_bind_per_site>0.01,]))
+
+number_greater_0.5 <- c(nrow(dt_sites[target=="Wuhan-Hu-1_v2" & max_bind_per_site>0.5,]),
+                      nrow(dt_sites[target=="Omicron_BA1" & max_bind_per_site>0.5,]),
+                      nrow(dt_sites[target=="Omicron_BA2" & max_bind_per_site>0.5,]))
+
+cbind("background"=bgs, "number > 0"=number_greater_0, "number > 0.01"=number_greater_0.01, "number_greater_0.5" = number_greater_0.5)
+
+```
+
+Not super meaningful.
 
 Save output files.
 

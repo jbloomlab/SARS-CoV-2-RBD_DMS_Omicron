@@ -1,5 +1,5 @@
 # the BioSample accession
-biosample_accession: SAMN25944367
+biosample_accession: SAMN30603946
 
 # name of CSV file listing barcode runs to uploade
 barcode_runs: ./barcode_runs_upload.csv
@@ -9,4 +9,4 @@ ftp_username: subftp
 ftp_account_folder: uploads/tyler.n.starr_gmail.com_LMpRB4Tu
 
 # Meaningful name for this sample's FTP folder:
-ftp_subfolder: variant_RBD_Illumina_bcs
+ftp_subfolder: Omicron_variant_RBD_Illumina_bcs

@@ -43,7 +43,7 @@ We are adding to an existing BioProject, so enter [PRJNA770094](https://www.ncbi
 Finally, add a sample title, such as "Illumina barcode sequencing for SARS2 variant RBD ACE2 and expression DMS."
 Then hit `Continue`, make sure everything looks correct, then hit `Submit`.
 
-After a brief bit of processing, the *BioSample* submission should show up, along with a sample accession that will be in the format of *SAMN25944367*.
+After a brief bit of processing, the *BioSample* submission should show up, along with a sample accession that will be in the format of *SAMN30603946*.
 Add this sample accession to [upload_config.yaml](upload_config.yaml) as the value for the *biosample_accession* key.
 
 ## Upload the sequencing data
