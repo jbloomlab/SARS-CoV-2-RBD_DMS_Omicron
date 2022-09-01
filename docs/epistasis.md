@@ -5,8 +5,6 @@ permalink: /epistatic-shifts/
 
 ---
 
-*NOTE data are preliminary*
-
 ### Overview 
 
 You can use this tool to explore epistatic shifts in mutational effects on ACE2-binding affinity (-log10 $$K_D$$) between SARS-CoV-2 receptor-binding domain (RBD) variants. Once you've selected a comparison of interest, you can investigate the mutation-level epistatic shifts. 
