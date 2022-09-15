@@ -56,7 +56,7 @@ sessionInfo()
 
     ## R version 3.6.2 (2019-12-12)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 18.04.5 LTS
+    ## Running under: Ubuntu 18.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/software/OpenBLAS/0.3.7-GCC-8.3.0/lib/libopenblas_haswellp-r0.3.7.so
@@ -251,10 +251,10 @@ plot_scatter <- function(site, bg1, bg2, JSD=F, JSD_min3bc=T, JSD_min5bc=F,n_bc_
 
 ``` r
 par(mfrow=c(4,3))
-plot_scatter(site=401,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA1")
-plot_scatter(site=405,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=406,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=439,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA1")
@@ -273,10 +273,10 @@ invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/bg-scatters_Omicron
 
 ``` r
 par(mfrow=c(4,3))
-plot_scatter(site=401,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA2")
-plot_scatter(site=405,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=406,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=439,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA2")
@@ -590,7 +590,8 @@ for(s in c("Omicron_BA1","Omicron_BA2")){
 ```
 
 ``` r
-temp <- dt[position==493 & target != "Omicron_BA2",]
+par(mfrow=c(1,2))
+temp <- dt[position==493 & target %in% c("Omicron_BA1","Wuhan-Hu-1_v2"),]
 
 temp[,delta_bind_Q493ref := as.numeric(NA)]
 for(i in 1:nrow(temp)){
@@ -601,6 +602,112 @@ plot(temp[target=="Wuhan-Hu-1_v2",delta_bind_Q493ref],temp[target=="Omicron_BA1"
 abline(a=0,b=1)
 abline(v=0,lty=2)
 abline(h=0,lty=2)
+
+temp2 <- dt[position==493 & target %in% c("Omicron_BA2","Wuhan-Hu-1_v2"),]
+
+temp2[,delta_bind_Q493ref := as.numeric(NA)]
+for(i in 1:nrow(temp2)){
+  temp2$delta_bind_Q493ref[i] <- temp2$bind[i] - temp2[target==temp2$target[i] & mutant=="Q",bind] 
+}
+
+plot(temp2[target=="Wuhan-Hu-1_v2",delta_bind_Q493ref],temp2[target=="Omicron_BA2",delta_bind_Q493ref],pch=temp2[target=="Wuhan-Hu-1_v2",mutant],xlab="Q493x mutation, WH1",ylab="Q493x mutation, BA1",xlim=c(-2.5,1.7),ylim=c(-2.5,1.7))
+abline(a=0,b=1)
+abline(v=0,lty=2)
+abline(h=0,lty=2)
 ```
 
 <img src="epistatic_shifts_files/figure-gfm/look more at 493-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/scatter_Q493x_mut.pdf",sep=""),useDingbats=F))
+```
+
+For each position that varies between WH1 and BA.1 and BA.2, make little
+plots that illustrate epistasis of the substitution itself to show
+entrenchment and anti-entrenchment
+
+``` r
+entrench_BA1 <- data.table(site=NA,WH1_wt=NA,BA1_wt=NA,WH1_wt_bind=NA,WH1_mut_bind=NA,BA1_revert_bind=NA,BA1_wt_bind=NA)
+
+for(pos in unique(dt$position)){
+  WH1_wt <- dt[target=="Wuhan-Hu-1_v2" & wildtype==mutant & position==pos,wildtype]
+  BA1_wt <- dt[target=="Omicron_BA1" & wildtype==mutant & position==pos,wildtype]
+  if(WH1_wt != BA1_wt){
+    entrench_BA1 <- rbind(entrench_BA1, 
+                          list(site=pos,
+                               WH1_wt=WH1_wt,
+                               BA1_wt=BA1_wt,
+                               WH1_wt_bind=dt[target=="Wuhan-Hu-1_v2" & position==pos & mutant==WH1_wt,bind],
+                               WH1_mut_bind=dt[target=="Wuhan-Hu-1_v2" & position==pos & mutant==BA1_wt,bind],
+                               BA1_revert_bind=dt[target=="Omicron_BA1" & position==pos & mutant==WH1_wt,bind],
+                               BA1_wt_bind=dt[target=="Omicron_BA1" & position==pos & mutant==BA1_wt,bind]
+                               )
+                          )
+  }
+}
+entrench_BA1 <- entrench_BA1[-1,]
+
+par(mfrow=c(5,3))
+for(i in 1:nrow(entrench_BA1)){
+  plot(1:4, 
+       entrench_BA1[i,4:7],
+       main=paste(entrench_BA1[i,c(2,1,3)],collapse=""),
+       pch=16,cex=2,
+       col=c(cbbPalette[1],cbbPalette[1],cbbPalette[2],cbbPalette[2]),
+       xlim=c(0.75, 4.25), ylim=c(6,10.5),
+       ylab="ACE2 affinity (-log10Kd)",
+       xlab="amino acid",
+       xaxt="n")
+  axis(1, at=1:4, labels=c("WH1", "WH1+\nmut","BA.1+\nrevert","BA.1"))
+  points(1:2, entrench_BA1[i,4:5],type="l",lwd=1.5)
+  points(3:4, entrench_BA1[i,6:7],type="l",lwd=1.5,col=cbbPalette[2])
+}
+```
+
+<img src="epistatic_shifts_files/figure-gfm/entrenchment_Omicron_BA1-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/entrenchment_diagrams_BA1.pdf",sep=""),useDingbats=F))
+```
+
+``` r
+entrench_BA2 <- data.table(site=NA,WH1_wt=NA,BA2_wt=NA,WH1_wt_bind=NA,WH1_mut_bind=NA,BA2_revert_bind=NA,BA2_wt_bind=NA)
+
+for(pos in unique(dt$position)){
+  WH1_wt <- dt[target=="Wuhan-Hu-1_v2" & wildtype==mutant & position==pos,wildtype]
+  BA2_wt <- dt[target=="Omicron_BA2" & wildtype==mutant & position==pos,wildtype]
+  if(WH1_wt != BA2_wt){
+    entrench_BA2 <- rbind(entrench_BA2, 
+                          list(site=pos,
+                               WH1_wt=WH1_wt,
+                               BA2_wt=BA2_wt,
+                               WH1_wt_bind=dt[target=="Wuhan-Hu-1_v2" & position==pos & mutant==WH1_wt,bind],
+                               WH1_mut_bind=dt[target=="Wuhan-Hu-1_v2" & position==pos & mutant==BA2_wt,bind],
+                               BA2_revert_bind=dt[target=="Omicron_BA2" & position==pos & mutant==WH1_wt,bind],
+                               BA2_wt_bind=dt[target=="Omicron_BA2" & position==pos & mutant==BA2_wt,bind]
+                               )
+                          )
+  }
+}
+entrench_BA2 <- entrench_BA2[-1,]
+
+par(mfrow=c(6,3))
+for(i in 1:nrow(entrench_BA2)){
+  plot(1:4, 
+       entrench_BA2[i,4:7],
+       main=paste(entrench_BA2[i,c(2,1,3)],collapse=""),
+       pch=16,cex=2,
+       col=c(cbbPalette[1],cbbPalette[1],cbbPalette[8],cbbPalette[8]),
+       xlim=c(0.75, 4.25), ylim=c(6,10.5),
+       ylab="ACE2 affinity (-log10Kd)",
+       xlab="",
+       xaxt="n")
+  axis(1, at=1:4, labels=c("WH1", "WH1+\nmut","BA.2+\nrevert","BA.2"))
+  points(1:2, entrench_BA2[i,4:5],type="l",lwd=1.5)
+  points(3:4, entrench_BA2[i,6:7],type="l",lwd=1.5,col=cbbPalette[8])
+}
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/entrenchment_diagrams_BA2.pdf",sep=""),useDingbats=F))
+```
+
+<img src="epistatic_shifts_files/figure-gfm/entrenchment_Omicron_BA2-1.png" style="display: block; margin: auto;" />
