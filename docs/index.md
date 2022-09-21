@@ -7,7 +7,7 @@ layout: default
 
 ## Overview 
 
-We performed deep mutational scans to measure the impact on ACE2 binding of all single amino-acid mutations in the Omicron BA.1 and BA.2 variant RBDs, and compare mutational effects to those in the ancestral Wuhan-Hu-1 RBD background. We combine this with other variant RBD backgrounds described in this [prior publication](https://www.science.org/doi/10.1126/science.abo7896).
+We performed deep mutational scans to measure the impact on ACE2 binding of all single amino-acid mutations in the Omicron BA.1 and BA.2 variant RBDs, and compare mutational effects to those in the ancestral Wuhan-Hu-1 RBD background. Find details in the our preprint [here](https://www.biorxiv.org/content/10.1101/2022.09.20.508745v1). We combine this with other variant RBD backgrounds described in this [prior publication](https://www.science.org/doi/10.1126/science.abo7896).
 
 Here, we link to two interactive visualizations that enable exploration of the data from these deep mutational scans across SARS_CoV-2 variants.
 
