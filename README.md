@@ -7,7 +7,7 @@ The 3 backgrounds examined here are:
   2. Omicron BA.1
   3. Omicron BA.2
 
-Study and analysis by Tyler Starr, Allie Greaney, [Jesse Bloom](https://research.fhcrc.org/bloom/en.html), and co-authors.
+Study and analysis by Tyler Starr, Allie Greaney, [Jesse Bloom](https://research.fhcrc.org/bloom/en.html), and co-authors. Find details of the study in our preprint [here](https://www.biorxiv.org/content/10.1101/2022.09.20.508745v1).
 
 Interactive visualizations of the key deep mutational scanning data are available [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_Omicron/).
 
