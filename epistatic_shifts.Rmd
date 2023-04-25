@@ -198,9 +198,9 @@ plot_scatter <- function(site, bg1, bg2, JSD=F, JSD_min3bc=T, JSD_min5bc=F,n_bc_
 par(mfrow=c(4,3))
 plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=406,"Wuhan-Hu-1_v2","Omicron_BA1")
-plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=439,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA1")
+plot_scatter(site=453,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA1")
 plot_scatter(site=494,"Wuhan-Hu-1_v2","Omicron_BA1")
@@ -216,9 +216,9 @@ invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/bg-scatters_Omicron
 par(mfrow=c(4,3))
 plot_scatter(site=403,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=406,"Wuhan-Hu-1_v2","Omicron_BA2")
-plot_scatter(site=419,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=439,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=449,"Wuhan-Hu-1_v2","Omicron_BA2")
+plot_scatter(site=453,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=455,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=493,"Wuhan-Hu-1_v2","Omicron_BA2")
 plot_scatter(site=494,"Wuhan-Hu-1_v2","Omicron_BA2")
@@ -253,6 +253,26 @@ sig_mAb_sites <- site_escape[site_average_escape>0.15, site]
 label_df <- data.frame(xmin=sig_mAb_sites-0.5,
                        xmax=sig_mAb_sites+0.5)
 
+```
+
+```{r mAb-escape-v-constraint, echo=T, fig.width=3.5, fig.height=3.5, fig.align="center", dpi=300,dev="png"}
+site_escape$site_average_ACE2 <- as.numeric(NA)
+for(i in 1:nrow(site_escape)){
+  site_escape$site_average_ACE2[i] <- median(dt[target=="Omicron_BA1" & position==site_escape[i,site] & wildtype!=mutant,delta_bind],na.rm=T)
+  
+}
+
+
+ggplot(data=site_escape, aes(x=site_average_ACE2, y=site_average_escape))+
+  geom_point()+
+  theme_classic()+
+  #scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
+  #theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
+  ylab("average mutation effect on antibody escape (arbitrary units)")+
+  xlab("average mutation effect on ACE2-binding (delta-log10Ka)")+
+  geom_text_repel(aes(label=ifelse((site_average_escape > 0.1),as.character(site),'')),size=3,color="gray40")
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/mAb-escape_v_ACE2_by-site.pdf",sep=""),useDingbats=F))
 ```
 
 ```{r line_plots_JSD_v_WH1, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
@@ -295,6 +315,40 @@ ggplot(data=temp, aes(x=site, y=JSD_min3bc, color=target))+
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc.pdf",sep=""),useDingbats=F))
 ```
 
+Same but faceted
+```{r line_plots_JSD_v_WH1_min3bc_facet, echo=T, fig.width=12, fig.height=21, fig.align="center", dpi=300,dev="png"}
+ggplot(data=temp, aes(x=site, y=JSD_min3bc, color=target))+
+  geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
+  geom_line(size=1)+
+  scale_color_manual(values=group.colors)+
+  theme_classic()+
+  scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
+  ylab("JS divergence versus Wuhan-Hu-1")+
+  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.15)),as.character(site),'')),size=3,color="gray40")+
+  facet_wrap(~bg_2,ncol=1)
+  
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_faceted.pdf",sep=""),useDingbats=F))
+```
+
+Include just Alpha from the prior VOC dataset, and Alpha-associated WH1 for "control"
+
+```{r line_plots_JSD_v_WH1_min3bc_Alpha-only, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Alpha","Wuhan-Hu-1_v1")], aes(x=site, y=JSD_min3bc, color=target))+
+  geom_rect(data=label_df, aes(x=NULL, y=NULL, color=NULL,xmin=xmin, xmax=xmax, ymin=0,ymax=1.1*max(temp$JSD,na.rm=T)), alpha=0.2)+
+  geom_line(size=1)+
+  scale_color_manual(values=group.colors)+
+  theme_classic()+
+  scale_x_continuous(expand=c(0.01,0.01),breaks=c(331,seq(335,530,by=5)))+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.6,face="bold",size=10))+
+  ylab("JS divergence versus Wuhan-Hu-1")+
+  geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.15)),as.character(site),'')),size=3,color="gray40")
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_Omi-and-Alpha-only.pdf",sep=""),useDingbats=F))
+```
+
+
 Include just Beta from the prior VOC dataset, and Beta-associated WH1 for "control"
 
 ```{r line_plots_JSD_v_WH1_min3bc_Beta-only, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
@@ -309,6 +363,37 @@ ggplot(data=temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Beta","Wuhan-Hu-1_v1")
   geom_text_repel(aes(label=ifelse(((JSD_min3bc > 0.15)),as.character(site),'')),size=3,color="gray40")
 
 invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_Omi-and-Beta-only.pdf",sep=""),useDingbats=F))
+```
+
+Scatterplots to more clearly show the additional shifts in each Omicron variant versus Alpha?
+
+```{r scatterplots_epistatic-shift_Alpha-BA1-BA2, echo=T, fig.width=12, fig.height=4, fig.align="center", dpi=300,dev="png"}
+temp2 <- dcast(temp[bg_2 %in% c("Omicron_BA1","Omicron_BA2","Alpha")], site ~ bg_2, value.var="JSD_min3bc")
+
+p1 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Omicron_BA2))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Omicron_BA1 > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.1")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Omicron BA.2")
+
+p2 <- ggplot(data=temp2, aes(x=Omicron_BA1, y=Alpha))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA1 > 0.1 | Alpha > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.1")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Alpha")
+
+p3 <- ggplot(data=temp2, aes(x=Omicron_BA2, y=Alpha))+
+  geom_point()+
+  geom_text_repel(aes(label=ifelse((Omicron_BA2 > 0.1 | Alpha > 0.1),as.character(site),'')),size=3)+
+  theme_classic()+
+  xlab("epistatic shift versus Wuhan-Hu-1, Omicron BA.2")+
+  ylab("epistatic shift versus Wuhan-Hu-1, Alpha")
+
+grid.arrange(p1,p2,p3,nrow=1)
+
+invisible(dev.print(pdf, paste(config$epistatic_shifts_dir,"/JSD_v_WH1_min3bc_Omi-versus-Alpha-scatters.pdf",sep=""),useDingbats=F))
 ```
 
 Scatterplots to more clearly show the additional shifts in each Omicron variant versus Beta?
